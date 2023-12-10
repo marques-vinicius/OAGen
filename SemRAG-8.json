@@ -1,0 +1,183 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clientes API",
+    "version": "1.0.0",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes."
+  },
+  "servers": [
+    {
+      "url": "https://api.clientes.com/{environment}",
+      "variables": {
+        "environment": {
+          "default": "dev",
+          "enum": [
+            "dev",
+            "homolog",
+            "prod"
+          ]
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/clientes/v1/cadastro": {
+      "post": {
+        "summary": "Cadastrar um cliente",
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de acesso do aplicativo",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "type": "string",
+                    "example": "12345678900"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "example": "João da Silva"
+                  },
+                  "endereco": {
+                    "type": "object",
+                    "properties": {
+                      "logradouro": {
+                        "type": "string",
+                        "example": "Rua Teste"
+                      },
+                      "numero": {
+                        "type": "string",
+                        "example": "123"
+                      },
+                      "cidade": {
+                        "type": "string",
+                        "example": "São Paulo"
+                      },
+                      "uf": {
+                        "type": "string",
+                        "example": "SP"
+                      },
+                      "cep": {
+                        "type": "string",
+                        "example": "01234567"
+                      }
+                    }
+                  },
+                  "informacoes_profissionais": {
+                    "type": "object",
+                    "properties": {
+                      "empregador": {
+                        "type": "string",
+                        "example": "Empresa ABC"
+                      },
+                      "cargo": {
+                        "type": "string",
+                        "example": "Analista"
+                      },
+                      "renda": {
+                        "type": "number",
+                        "example": 5000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente cadastrado com sucesso"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        },
+        "security": [
+          {
+            "OAuth": [
+              "clientes:cadastrar"
+            ]
+          }
+        ]
+      }
+    },
+    "/clientes/v1/consulta/{cpf}": {
+      "get": {
+        "summary": "Consultar dados de um cliente",
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "path",
+            "description": "CPF do cliente",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de acesso do aplicativo",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do cliente retornados com sucesso"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "404": {
+            "description": "Cliente não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        },
+        "security": [
+          {
+            "OAuth": [
+              "clientes:consultar"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://auth.example.com/oauth/token",
+            "scopes": {
+              "clientes:cadastrar": "Permite cadastrar clientes",
+              "clientes:consultar": "Permite consultar clientes"
+            }
+          }
+        }
+      }
+    }
+  }
+}

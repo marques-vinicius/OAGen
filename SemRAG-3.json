@@ -1,0 +1,246 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clientes API",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://api.clientes.com.br/v1",
+      "description": "Servidor de produção"
+    }
+  ],
+  "paths": {
+    "/clientes": {
+      "post": {
+        "summary": "Cadastrar um cliente",
+        "description": "Cadastra um novo cliente com os seguintes dados: CPF, nome completo, endereço e informações profissionais.",
+        "operationId": "cadastrarCliente",
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de autenticação do desenvolvedor da aplicação",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Dados do cliente a ser cadastrado",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "type": "string",
+                    "example": "123.456.789-00"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "example": "Fulano de Tal"
+                  },
+                  "endereco": {
+                    "type": "object",
+                    "properties": {
+                      "logradouro": {
+                        "type": "string",
+                        "example": "Rua dos Bobos"
+                      },
+                      "numero": {
+                        "type": "integer",
+                        "example": 123
+                      },
+                      "cidade": {
+                        "type": "string",
+                        "example": "São Paulo"
+                      },
+                      "uf": {
+                        "type": "string",
+                        "example": "SP"
+                      },
+                      "cep": {
+                        "type": "string",
+                        "example": "01234-567"
+                      }
+                    }
+                  },
+                  "informacoesProfissionais": {
+                    "type": "object",
+                    "properties": {
+                      "empregador": {
+                        "type": "string",
+                        "example": "Empresa XPTO"
+                      },
+                      "cargo": {
+                        "type": "string",
+                        "example": "Analista"
+                      },
+                      "renda": {
+                        "type": "number",
+                        "example": 5000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente cadastrado com sucesso"
+          },
+          "400": {
+            "description": "Erro na requisição de cadastro do cliente"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        },
+        "security": [
+          {
+            "OAuth": [
+              "cliente:cadastro"
+            ]
+          }
+        ]
+      }
+    },
+    "/clientes/{cpf}": {
+      "get": {
+        "summary": "Consultar um cliente",
+        "description": "Consulta os dados de um cliente específico pelo CPF.",
+        "operationId": "consultarCliente",
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de autenticação do desenvolvedor da aplicação",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cpf",
+            "in": "path",
+            "description": "CPF do cliente a ser consultado",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "cpf"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente consultado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cpf": {
+                      "type": "string",
+                      "example": "123.456.789-00"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "example": "Fulano de Tal"
+                    },
+                    "endereco": {
+                      "type": "object",
+                      "properties": {
+                        "logradouro": {
+                          "type": "string",
+                          "example": "Rua dos Bobos"
+                        },
+                        "numero": {
+                          "type": "integer",
+                          "example": 123
+                        },
+                        "cidade": {
+                          "type": "string",
+                          "example": "São Paulo"
+                        },
+                        "uf": {
+                          "type": "string",
+                          "example": "SP"
+                        },
+                        "cep": {
+                          "type": "string",
+                          "example": "01234-567"
+                        }
+                      }
+                    },
+                    "informacoesProfissionais": {
+                      "type": "object",
+                      "properties": {
+                        "empregador": {
+                          "type": "string",
+                          "example": "Empresa XPTO"
+                        },
+                        "cargo": {
+                          "type": "string",
+                          "example": "Analista"
+                        },
+                        "renda": {
+                          "type": "number",
+                          "example": 5000
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição de consulta do cliente"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "404": {
+            "description": "Cliente não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        },
+        "security": [
+          {
+            "OAuth": [
+              "cliente:consulta"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth": {
+        "type": "oauth2",
+        "description": "Fluxo de autenticação OAuth",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://api.clientes.com.br/oauth/token",
+            "scopes": {
+              "cliente:cadastro": "Permite cadastrar um cliente",
+              "cliente:consulta": "Permite consultar um cliente"
+            }
+          }
+        }
+      }
+    }
+  }
+}

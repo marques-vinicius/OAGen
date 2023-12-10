@@ -1,0 +1,294 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clientes API",
+    "version": "1.0.0",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes."
+  },
+  "servers": [
+    {
+      "url": "https://api.dev.clientes.com",
+      "description": "Ambiente de desenvolvimento"
+    },
+    {
+      "url": "https://api.homolog.clientes.com",
+      "description": "Ambiente de homologação"
+    },
+    {
+      "url": "https://api.prod.clientes.com",
+      "description": "Ambiente de produção"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "OAuth2hm": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://auth.hm.clientes.com/token",
+            "scopes": {
+              "clientes.read": "Permissão para consultar clientes",
+              "clientes.write": "Permissão para cadastrar clientes"
+            }
+          }
+        }
+      },
+      "OAuth2prod": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://auth.prod.clientes.com/token",
+            "scopes": {
+              "clientes.read": "Permissão para consultar clientes",
+              "clientes.write": "Permissão para cadastrar clientes"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "description": "CPF do cliente",
+            "example": "12345678901"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome completo do cliente",
+            "example": "João da Silva"
+          },
+          "endereco": {
+            "type": "object",
+            "properties": {
+              "logradouro": {
+                "type": "string",
+                "description": "Logradouro do endereço",
+                "example": "Rua A"
+              },
+              "numero": {
+                "type": "string",
+                "description": "Número do endereço",
+                "example": "123"
+              },
+              "cidade": {
+                "type": "string",
+                "description": "Cidade do endereço",
+                "example": "São Paulo"
+              },
+              "uf": {
+                "type": "string",
+                "description": "UF do endereço",
+                "example": "SP"
+              },
+              "cep": {
+                "type": "string",
+                "description": "CEP do endereço",
+                "example": "12345-678"
+              }
+            }
+          },
+          "informacoesProfissionais": {
+            "type": "object",
+            "properties": {
+              "empregador": {
+                "type": "string",
+                "description": "Nome do empregador",
+                "example": "Empresa X"
+              },
+              "cargo": {
+                "type": "string",
+                "description": "Cargo do cliente",
+                "example": "Analista"
+              },
+              "renda": {
+                "type": "number",
+                "description": "Renda do cliente",
+                "example": 5000
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "cpf": {
+        "name": "cpf",
+        "in": "query",
+        "description": "CPF do cliente",
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9]{11}$"
+        }
+      }
+    },
+    "responses": {
+      "AcessoNegado": {
+        "description": "Acesso negado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Acesso negado"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NaoEncontrado": {
+        "description": "Não encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Cliente não encontrado"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ServicoIndisponivel": {
+        "description": "Serviço indisponível",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Serviço temporariamente indisponível"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "examples": {
+      "getCobsV1": {
+        "value": {
+          "cpf": "12345678901"
+        }
+      },
+      "pixResponse1": {
+        "value": {
+          "e2eid": "1234567890"
+        }
+      },
+      "pixResponse2": {
+        "value": {
+          "e2eid": "0987654321"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/clientes": {
+      "post": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Cadastrar cliente",
+        "security": [
+          {
+            "OAuth2hm": [
+              "clientes.write"
+            ]
+          },
+          {
+            "OAuth2prod": [
+              "clientes.write"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cliente"
+              },
+              "examples": {
+                "cadastrarCliente": {
+                  "$ref": "#/components/examples/cadastrarCliente"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente cadastrado com sucesso"
+          },
+          "403": {
+            "$ref": "#/components/responses/AcessoNegado"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServicoIndisponivel"
+          }
+        }
+      }
+    },
+    "/clientes/{cpf}": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Consultar cliente",
+        "security": [
+          {
+            "OAuth2hm": [
+              "clientes.read"
+            ]
+          },
+          {
+            "OAuth2prod": [
+              "clientes.read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/cpf"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do cliente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                },
+                "examples": {
+                  "consultarCliente": {
+                    "$ref": "#/components/examples/consultarCliente"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/AcessoNegado"
+          },
+          "404": {
+            "$ref": "#/components/responses/NaoEncontrado"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServicoIndisponivel"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clientes API",
+    "version": "1.0.0",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes."
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com",
+      "description": "Produção"
+    }
+  ],
+  "paths": {
+    "/clientes/v1/": {
+      "post": {
+        "summary": "Cadastrar cliente",
+        "description": "Realiza o cadastramento de um cliente.",
+        "tags": [
+          "Clientes"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "gw-dev-app-key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Dados do cliente",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cliente"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "cpf": "12345678900",
+                    "nome": "Fulano de Tal",
+                    "endereco": {
+                      "logradouro": "Rua Exemplo",
+                      "numero": "123",
+                      "cidade": "Cidade Exemplo",
+                      "uf": "EX",
+                      "cep": "12345-678"
+                    },
+                    "informacoesProfissionais": {
+                      "empregador": "Empresa Exemplo",
+                      "cargo": "Analista",
+                      "renda": 5000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente cadastrado com sucesso"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "write:clientes"
+            ]
+          }
+        ]
+      }
+    },
+    "/clientes/v1/{cpf}": {
+      "get": {
+        "summary": "Consultar cliente",
+        "description": "Retorna os dados de um cliente específico.",
+        "tags": [
+          "Clientes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cpf",
+            "required": true,
+            "description": "CPF do cliente",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "gw-dev-app-key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                },
+                "examples": {
+                  "example1": {
+                    "value": {
+                      "cpf": "12345678900",
+                      "nome": "Fulano de Tal",
+                      "endereco": {
+                        "logradouro": "Rua Exemplo",
+                        "numero": "123",
+                        "cidade": "Cidade Exemplo",
+                        "uf": "EX",
+                        "cep": "12345-678"
+                      },
+                      "informacoesProfissionais": {
+                        "empregador": "Empresa Exemplo",
+                        "cargo": "Analista",
+                        "renda": 5000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "404": {
+            "description": "Cliente não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "read:clientes"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "description": "CPF do cliente",
+            "example": "12345678900"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome completo do cliente",
+            "example": "Fulano de Tal"
+          },
+          "endereco": {
+            "type": "object",
+            "properties": {
+              "logradouro": {
+                "type": "string",
+                "description": "Logradouro do endereço",
+                "example": "Rua Exemplo"
+              },
+              "numero": {
+                "type": "string",
+                "description": "Número do endereço",
+                "example": "123"
+              },
+              "cidade": {
+                "type": "string",
+                "description": "Cidade do endereço",
+                "example": "Cidade Exemplo"
+              },
+              "uf": {
+                "type": "string",
+                "description": "UF do endereço",
+                "example": "EX"
+              },
+              "cep": {
+                "type": "string",
+                "description": "CEP do endereço",
+                "example": "12345-678"
+              }
+            }
+          },
+          "informacoesProfissionais": {
+            "type": "object",
+            "properties": {
+              "empregador": {
+                "type": "string",
+                "description": "Nome do empregador",
+                "example": "Empresa Exemplo"
+              },
+              "cargo": {
+                "type": "string",
+                "description": "Cargo do cliente",
+                "example": "Analista"
+              },
+              "renda": {
+                "type": "number",
+                "description": "Renda do cliente",
+                "example": 5000
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

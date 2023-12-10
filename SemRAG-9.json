@@ -1,0 +1,203 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clientes",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/clientes/v1",
+      "description": "Ambiente de Produção"
+    }
+  ],
+  "paths": {
+    "/clientes": {
+      "get": {
+        "summary": "Consulta de cliente",
+        "description": "Retorna os dados de um cliente específico",
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "query",
+            "description": "CPF do cliente",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de aplicação",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "application/json": {
+                    "cpf": "11111111111",
+                    "nome": "João da Silva",
+                    "endereco": {
+                      "logradouro": "Rua dos Exemplos",
+                      "numero": "123",
+                      "cidade": "Exemplolandia",
+                      "uf": "EX",
+                      "cep": "12345-678"
+                    },
+                    "profissional": {
+                      "empregador": "Empresa Exemplo",
+                      "cargo": "Desenvolvedor",
+                      "renda": 5000
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastramento de cliente",
+        "description": "Cadastra um novo cliente",
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de aplicação",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "type": "string"
+                  },
+                  "nome": {
+                    "type": "string"
+                  },
+                  "endereco": {
+                    "type": "object",
+                    "properties": {
+                      "logradouro": {
+                        "type": "string"
+                      },
+                      "numero": {
+                        "type": "string"
+                      },
+                      "cidade": {
+                        "type": "string"
+                      },
+                      "uf": {
+                        "type": "string"
+                      },
+                      "cep": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "profissional": {
+                    "type": "object",
+                    "properties": {
+                      "empregador": {
+                        "type": "string"
+                      },
+                      "cargo": {
+                        "type": "string"
+                      },
+                      "renda": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "cpf",
+                  "nome",
+                  "endereco",
+                  "profissional"
+                ]
+              },
+              "examples": {
+                "application/json": {
+                  "cpf": "11111111111",
+                  "nome": "João da Silva",
+                  "endereco": {
+                    "logradouro": "Rua dos Exemplos",
+                    "numero": "123",
+                    "cidade": "Exemplolandia",
+                    "uf": "EX",
+                    "cep": "12345-678"
+                  },
+                  "profissional": {
+                    "empregador": "Empresa Exemplo",
+                    "cargo": "Desenvolvedor",
+                    "renda": 5000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "oauth": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://api.example.com/oauth/token",
+            "scopes": {
+              "consulta_cliente": "Permite realizar consultas de clientes",
+              "cadastro_cliente": "Permite cadastrar clientes"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth": [
+        "consulta_cliente",
+        "cadastro_cliente"
+      ]
+    }
+  ]
+}

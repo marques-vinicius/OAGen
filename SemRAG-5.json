@@ -1,0 +1,262 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API de Clientes",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.exemplo.com/clientes/v1",
+      "description": "Servidor de Produção"
+    }
+  ],
+  "paths": {
+    "/clientes": {
+      "post": {
+        "summary": "Cadastrar cliente",
+        "description": "Cadastra um novo cliente.",
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave da aplicação para a autorização",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "type": "string",
+                    "example": "12345678900"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "example": "Fulano de Tal"
+                  },
+                  "endereco": {
+                    "type": "object",
+                    "properties": {
+                      "logradouro": {
+                        "type": "string",
+                        "example": "Rua das Flores"
+                      },
+                      "numero": {
+                        "type": "string",
+                        "example": "123"
+                      },
+                      "cidade": {
+                        "type": "string",
+                        "example": "São Paulo"
+                      },
+                      "uf": {
+                        "type": "string",
+                        "example": "SP"
+                      },
+                      "cep": {
+                        "type": "string",
+                        "example": "01234567"
+                      }
+                    }
+                  },
+                  "informacoes_profissionais": {
+                    "type": "object",
+                    "properties": {
+                      "empregador": {
+                        "type": "string",
+                        "example": "Empresa ABC"
+                      },
+                      "cargo": {
+                        "type": "string",
+                        "example": "Analista"
+                      },
+                      "renda": {
+                        "type": "number",
+                        "example": 5000
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "cpf",
+                  "nome",
+                  "endereco",
+                  "informacoes_profissionais"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente cadastrado com sucesso"
+          },
+          "400": {
+            "description": "Erro na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "CPF já cadastrado"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clientes/{cpf}": {
+      "get": {
+        "summary": "Consultar cliente",
+        "description": "Retorna os dados de um cliente específico.",
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave da aplicação para a autorização",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cpf",
+            "in": "path",
+            "description": "CPF do cliente",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do cliente encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cpf": {
+                      "type": "string",
+                      "example": "12345678900"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "example": "Fulano de Tal"
+                    },
+                    "endereco": {
+                      "type": "object",
+                      "properties": {
+                        "logradouro": {
+                          "type": "string",
+                          "example": "Rua das Flores"
+                        },
+                        "numero": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "cidade": {
+                          "type": "string",
+                          "example": "São Paulo"
+                        },
+                        "uf": {
+                          "type": "string",
+                          "example": "SP"
+                        },
+                        "cep": {
+                          "type": "string",
+                          "example": "01234567"
+                        }
+                      }
+                    },
+                    "informacoes_profissionais": {
+                      "type": "object",
+                      "properties": {
+                        "empregador": {
+                          "type": "string",
+                          "example": "Empresa ABC"
+                        },
+                        "cargo": {
+                          "type": "string",
+                          "example": "Analista"
+                        },
+                        "renda": {
+                          "type": "number",
+                          "example": 5000
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "cpf",
+                    "nome",
+                    "endereco",
+                    "informacoes_profissionais"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Cliente não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "OAuth2": [
+        "clientes:consulta"
+      ]
+    },
+    {
+      "OAuth2": [
+        "clientes:cadastramento"
+      ]
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://api.exemplo.com/oauth/token",
+            "scopes": {
+              "clientes:cadastramento": "Escopo para cadastramento de clientes",
+              "clientes:consulta": "Escopo para consulta de clientes"
+            }
+          }
+        }
+      }
+    }
+  }
+}

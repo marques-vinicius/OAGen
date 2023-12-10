@@ -1,0 +1,218 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clientes API",
+    "version": "1.0.0",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes."
+  },
+  "servers": [
+    {
+      "url": "https://api.desenvolvimento.com/clientes/v1",
+      "description": "Servidor de desenvolvimento"
+    },
+    {
+      "url": "https://api.homologacao.com/clientes/v1",
+      "description": "Servidor de homologação"
+    },
+    {
+      "url": "https://api.producao.com/clientes/v1",
+      "description": "Servidor de produção"
+    }
+  ],
+  "paths": {
+    "/cadastrar-cliente": {
+      "post": {
+        "summary": "Endpoint para cadastrar um cliente.",
+        "operationId": "cadastrarCliente",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "gw-dev-app-key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Dados do cliente a ser cadastrado.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cliente"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente cadastrado com sucesso.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "123",
+                  "message": "Cliente cadastrado com sucesso."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falha no cadastro do cliente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Falha no cadastro do cliente."
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth": [
+              "cadastrar:cliente"
+            ]
+          }
+        ]
+      }
+    },
+    "/consultar-cliente/{cpf}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cpf",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "gw-dev-app-key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "Endpoint para consultar um cliente.",
+        "operationId": "consultarCliente",
+        "responses": {
+          "200": {
+            "description": "Dados do cliente consultado com sucesso.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "123",
+                  "cpf": "11122233344",
+                  "nome": "Fulano da Silva",
+                  "endereco": {
+                    "logradouro": "Rua A",
+                    "numero": "123",
+                    "cidade": "São Paulo",
+                    "uf": "SP",
+                    "cep": "00000-000"
+                  },
+                  "informacoesProfissionais": {
+                    "empregador": "Empresa A",
+                    "cargo": "Gerente",
+                    "renda": 5000
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falha na consulta do cliente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Falha na consulta do cliente."
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth": [
+              "consultar:cliente"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "cpf": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "object",
+            "properties": {
+              "logradouro": {
+                "type": "string"
+              },
+              "numero": {
+                "type": "string"
+              },
+              "cidade": {
+                "type": "string"
+              },
+              "uf": {
+                "type": "string"
+              },
+              "cep": {
+                "type": "string"
+              }
+            }
+          },
+          "informacoesProfissionais": {
+            "type": "object",
+            "properties": {
+              "empregador": {
+                "type": "string"
+              },
+              "cargo": {
+                "type": "string"
+              },
+              "renda": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "required": [
+          "cpf",
+          "nome",
+          "endereco",
+          "informacoesProfissionais"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "OAuth": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://api.example.com/oauth2/authorize",
+            "tokenUrl": "https://api.example.com/oauth2/token",
+            "scopes": {
+              "cadastrar:cliente": "Escopo necessário para cadastrar um cliente",
+              "consultar:cliente": "Escopo necessário para consultar um cliente"
+            }
+          }
+        }
+      }
+    }
+  }
+}

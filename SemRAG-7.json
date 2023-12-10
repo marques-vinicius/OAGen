@@ -1,0 +1,339 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clientes API",
+    "version": "1.0.0",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes."
+  },
+  "paths": {
+    "/clientes/v1/cadastro": {
+      "post": {
+        "summary": "Cadastra um novo cliente",
+        "operationId": "cadastrarCliente",
+        "security": [
+          {
+            "OAuth2": [
+              "clientes:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "required": true
+            },
+            "description": "Chave de autenticação do aplicativo"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClienteCadastro"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "cpf": "12345678900",
+                    "nome": "João da Silva",
+                    "endereco": {
+                      "logradouro": "Rua A",
+                      "numero": "123",
+                      "cidade": "São Paulo",
+                      "uf": "SP",
+                      "cep": "01234-567"
+                    },
+                    "informacoesProfissionais": {
+                      "empregador": "Empresa XYZ",
+                      "cargo": "Analista",
+                      "renda": 5000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente cadastrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                },
+                "examples": {
+                  "example1": {
+                    "value": {
+                      "id": 1,
+                      "cpf": "12345678900",
+                      "nome": "João da Silva",
+                      "endereco": {
+                        "logradouro": "Rua A",
+                        "numero": "123",
+                        "cidade": "São Paulo",
+                        "uf": "SP",
+                        "cep": "01234-567"
+                      },
+                      "informacoesProfissionais": {
+                        "empregador": "Empresa XYZ",
+                        "cargo": "Analista",
+                        "renda": 5000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CPF inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "example1": {
+                    "value": {
+                      "error": "CPF inválido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem autorização para cadastrar cliente"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/clientes/v1/consulta/{cpf}": {
+      "get": {
+        "summary": "Consulta um cliente pelo CPF",
+        "operationId": "consultarCliente",
+        "security": [
+          {
+            "OAuth2": [
+              "clientes:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "required": true
+            },
+            "description": "Chave de autenticação do aplicativo"
+          },
+          {
+            "name": "cpf",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "CPF do cliente"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                },
+                "examples": {
+                  "example1": {
+                    "value": {
+                      "id": 1,
+                      "cpf": "12345678900",
+                      "nome": "João da Silva",
+                      "endereco": {
+                        "logradouro": "Rua A",
+                        "numero": "123",
+                        "cidade": "São Paulo",
+                        "uf": "SP",
+                        "cep": "01234-567"
+                      },
+                      "informacoesProfissionais": {
+                        "empregador": "Empresa XYZ",
+                        "cargo": "Analista",
+                        "renda": 5000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem autorização para consultar cliente"
+          },
+          "404": {
+            "description": "Cliente não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "example1": {
+                    "value": {
+                      "error": "Cliente não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "readOnly": true
+          },
+          "cpf": {
+            "type": "string",
+            "pattern": "^[0-9]{11}$"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "$ref": "#/components/schemas/Endereco"
+          },
+          "informacoesProfissionais": {
+            "$ref": "#/components/schemas/InformacoesProfissionais"
+          }
+        }
+      },
+      "Endereco": {
+        "type": "object",
+        "properties": {
+          "logradouro": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "cidade": {
+            "type": "string"
+          },
+          "uf": {
+            "type": "string"
+          },
+          "cep": {
+            "type": "string"
+          }
+        }
+      },
+      "InformacoesProfissionais": {
+        "type": "object",
+        "properties": {
+          "empregador": {
+            "type": "string"
+          },
+          "cargo": {
+            "type": "string"
+          },
+          "renda": {
+            "type": "number",
+            "minimum": 1
+          }
+        }
+      },
+      "ClienteCadastro": {
+        "type": "object",
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "pattern": "^[0-9]{11}$"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "$ref": "#/components/schemas/Endereco"
+          },
+          "informacoesProfissionais": {
+            "$ref": "#/components/schemas/InformacoesProfissionais"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://example.com/oauth2/token",
+            "scopes": {
+              "clientes:write": "Permite cadastrar novos clientes",
+              "clientes:read": "Permite consultar clientes"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "OAuth2": [
+        "clientes:read",
+        "clientes:write"
+      ]
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.example.com/dev",
+      "description": "Servidor de desenvolvimento"
+    },
+    {
+      "url": "https://api.example.com/hml",
+      "description": "Servidor de homologação"
+    },
+    {
+      "url": "https://api.example.com/prod",
+      "description": "Servidor de produção"
+    }
+  ],
+  "tags": [
+    {
+      "name": "clientes",
+      "description": "Operações relacionadas a clientes"
+    }
+  ]
+}

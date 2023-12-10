@@ -1,0 +1,313 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Clientes API",
+    "description": "Solução que possibilita a realização de consultas e cadastramento de clientes.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/clientes/v1",
+      "description": "Ambiente de Produção",
+      "variables": {
+        "gw-dev-app-key": {
+          "default": "your-api-key",
+          "description": "Chave de autenticação do aplicativo de desenvolvimento",
+          "required": true
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/clientes": {
+      "get": {
+        "summary": "Consulta todos os clientes",
+        "description": "Retorna todos os clientes cadastrados na API.",
+        "security": [
+          {
+            "OAuth": [
+              "clientes:consultar"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de autenticação do aplicativo de desenvolvimento",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clientes encontrados.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Cliente"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Acesso não autorizado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Acesso não autorizado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Erro interno do servidor"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastra um novo cliente",
+        "description": "Cadastra um novo cliente na API.",
+        "security": [
+          {
+            "OAuth": [
+              "clientes:cadastrar"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de autenticação do aplicativo de desenvolvimento",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cliente"
+              },
+              "example": {
+                "cpf": "12345678901",
+                "nome": "Fulano de Tal",
+                "endereco": {
+                  "logradouro": "Rua das Flores",
+                  "numero": "123",
+                  "cidade": "São Paulo",
+                  "uf": "SP",
+                  "cep": "01234-567"
+                },
+                "informacoesProfissionais": {
+                  "empregador": "Empresa X",
+                  "cargo": "Analista",
+                  "renda": 5000
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente cadastrado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Acesso não autorizado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Acesso não autorizado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Erro interno do servidor"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clientes/{cpf}": {
+      "get": {
+        "summary": "Consulta um cliente específico pelo CPF",
+        "description": "Retorna os dados de um cliente específico mediante a informação do CPF.",
+        "security": [
+          {
+            "OAuth": [
+              "clientes:consultar"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "path",
+            "description": "CPF do cliente",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gw-dev-app-key",
+            "in": "query",
+            "description": "Chave de autenticação do aplicativo de desenvolvimento",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Acesso não autorizado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Acesso não autorizado"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente não encontrado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Cliente não encontrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Erro interno do servidor"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Endereco": {
+        "type": "object",
+        "properties": {
+          "logradouro": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "cidade": {
+            "type": "string"
+          },
+          "uf": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "cep": {
+            "type": "string"
+          }
+        }
+      },
+      "InformacoesProfissionais": {
+        "type": "object",
+        "properties": {
+          "empregador": {
+            "type": "string"
+          },
+          "cargo": {
+            "type": "string"
+          },
+          "renda": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "cpf": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "endereco": {
+            "$ref": "#/components/schemas/Endereco"
+          },
+          "informacoesProfissionais": {
+            "$ref": "#/components/schemas/InformacoesProfissionais"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "OAuth": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://auth.example.com/token",
+            "scopes": {
+              "clientes:cadastrar": "Permite cadastrar um novo cliente",
+              "clientes:consultar": "Permite consultar dados dos clientes"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "OAuth": []
+    }
+  ]
+}
