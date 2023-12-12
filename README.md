@@ -4,5 +4,5 @@ OAGen is an experiment that uses a Large Language Model to generate OpenAPI Spec
 The files in this repository are the replication package for the OAGen experiment:
 - Replication package for the OAGen experiment.pdf: contains guidelines for creating the prompts and pipelines. Prompts are in Portuguese.
 - MarquesVinicius-DevBotsCanCoDesignAPIs.pdf: contains the paper describing the experiment.
-- ComRAG-1.json to ComRAG-10.json: OAS produced by the RAG pipeline. "Com" means "With" in Portuguese.
-- SemRAG-1.json to SemRAG-10.json: OAS produced by the pipeline without RAG.
+- /samples/ComRAG-1.json to /samples/ComRAG-10.json: OAS produced by the RAG pipeline. "Com" means "With" in Portuguese.
+- /samples/SemRAG-1.json to /samples/SemRAG-10.json: OAS produced by the pipeline without RAG.
